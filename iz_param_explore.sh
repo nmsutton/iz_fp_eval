@@ -31,6 +31,6 @@ do
 	make clean && make && \
 	./iz_fp_eval ${p1[i]} ${p2[i]} ${p3[i]} ${p4[i]} ${p5[i]} ${p6[i]} ${p7[i]} ${p8[i]} ${p9[i]} &&
 	cd scripts &&
-	matlab -nodisplay -r "plot_results '../results/n_MEC_LII_Stellate.dat' 'r$i' ; exit";
+	matlab -nodisplay -r "plot_results '../results/n_neuron.dat' 'r$i' ; exit";
 	((i=i+1));
 done
