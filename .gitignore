@@ -1,5 +1,6 @@
 results/*
 scripts/*.jpg
+scripts/*.png
 
 # Prerequisites
 *.d
