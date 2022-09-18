@@ -50,33 +50,43 @@
 
 #include <carlsim.h> // include CARLsim user interface
 
-int main() {
-	// ---------------- CONFIG STATE -------------------	
-	int randSeed = 42; int numGPUs = 1;
-	CARLsim sim("hello world", GPU_MODE, USER, numGPUs, randSeed);
-	int dummy = sim.createSpikeGeneratorGroup("dummy_connection", 1, EXCITATORY_NEURON, 0, GPU_CORES);
-	int MEC_LII_Stellate=sim.createGroup("MEC_LII_Stellate", 1, EXCITATORY_NEURON, ANY, GPU_CORES);
-	sim.setNeuronParameters(MEC_LII_Stellate, 118.000000f, 0.0f, 0.62f, 0.0f, -58.53f, 
-	0.0f, -43.52f, 0.0f, 0.005f, 0.0f, 11.690000f, 0.0f, 11.48f, 0.0f, -49.52f, 0.0f, 
-    3.0f, 0.0f, 1);
-	sim.connect(dummy, MEC_LII_Stellate, "one-to-one", 0.0f, SYN_FIXED); // CARLsim seems to require at least one connection
-	sim.setNeuronMonitor(MEC_LII_Stellate,"DEFAULT");	
-	// ---------------- SETUP STATE -------------------
-	sim.setupNetwork();
-	SpikeMonitor* SMexc = sim.setSpikeMonitor(MEC_LII_Stellate, "DEFAULT");
-	// ---------------- RUN STATE -------------------
-	SMexc->startRecording();
-	for (int i=0; i<100; i++) {
-		if (i==4) {
-			sim.setExternalCurrent(MEC_LII_Stellate, 300.0f);
-		}
-		if (i==14) {
-			sim.setExternalCurrent(MEC_LII_Stellate, 0.0f);
-		}
-		sim.runNetwork(0,100, false);
+int main(int argc, char *argv[]) {
+	if (argc != 10) {
+		printf("\nUsage: iz_fp_eval <9_IM_params>\n");
+		printf("%d arguments found.\n",argc);
 	}
-	SMexc->stopRecording(); printf("\n\n");
-	SMexc->print(false); // print firing stats	
+	else {
+		// ---------------- CONFIG STATE -------------------	
+		int randSeed = 42; int numGPUs = 1;
+		CARLsim sim("hello world", GPU_MODE, USER, numGPUs, randSeed);
+		int dummy = sim.createSpikeGeneratorGroup("dummy_connection", 1, EXCITATORY_NEURON, 0, GPU_CORES);
+		int MEC_LII_Stellate=sim.createGroup("MEC_LII_Stellate", 1, EXCITATORY_NEURON, ANY, GPU_CORES);
+		/*sim.setNeuronParameters(MEC_LII_Stellate, 118.000000f, 0.0f, 0.62f, 0.0f, -58.53f, 
+		0.0f, -43.52f, 0.0f, 0.005f, 0.0f, 11.690000f, 0.0f, 11.48f, 0.0f, -49.52f, 0.0f, 
+	    3.0f, 0.0f, 1);*/
+	    sim.setNeuronParameters(MEC_LII_Stellate, atof(argv[1]), 0.0f, atof(argv[2]), 
+	    0.0f, atof(argv[3]), 0.0f, atof(argv[4]), 0.0f, atof(argv[5]), 0.0f, 
+	    atof(argv[6]), 0.0f, atof(argv[7]), 0.0f, atof(argv[8]), 0.0f, 
+	    atof(argv[9]), 0.0f, 1);
+		sim.connect(dummy, MEC_LII_Stellate, "one-to-one", 0.0f, SYN_FIXED); // CARLsim seems to require at least one connection
+		sim.setNeuronMonitor(MEC_LII_Stellate,"DEFAULT");	
+		// ---------------- SETUP STATE -------------------
+		sim.setupNetwork();
+		SpikeMonitor* SMexc = sim.setSpikeMonitor(MEC_LII_Stellate, "DEFAULT");
+		// ---------------- RUN STATE -------------------
+		SMexc->startRecording();
+		for (int i=0; i<100; i++) {
+			if (i==4) {
+				sim.setExternalCurrent(MEC_LII_Stellate, 300.0f);
+			}
+			if (i==14) {
+				sim.setExternalCurrent(MEC_LII_Stellate, 0.0f);
+			}
+			sim.runNetwork(0,100, false);
+		}
+		SMexc->stopRecording(); printf("\n\n");
+		SMexc->print(false); // print firing stats	
+	}
 	
 	return 0;
 }
